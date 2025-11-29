@@ -17,16 +17,18 @@ export const PUBLIC_PROXY = 'https://corsproxy.io/?';
 
 // Example queries for placeholder rotation
 export const EXAMPLE_QUERIES = [
-  'Florida properties with hurricane risk',
-  'High value buildings in New York',
-  'Sprinklered properties in California',
-  'Locations with risk control alerts',
-  'Earthquake exposure in San Francisco',
-  'Old buildings needing attention',
-  'High rise offices in Chicago',
-  'Properties with high claims',
-  'Coastal surge risk locations',
-  'Times Square properties',
+  'Show me duplicate locations',
+  'Find locations with data conflicts',
+  'Which locations need enrichment',
+  'Show customer 360 for Freedom Office Trust',
+  'Locations with sprinkler conflicts',
+  'Properties missing construction data',
+  'High value buildings in California',
+  'Healthcare locations with stale inspections',
+  'Show all locations for University of LA',
+  'Find conflicts from ISO reports',
+  'Locations submitted multiple times',
+  'Properties needing Nearmap enrichment',
 ];
 
 // Peril Overlay Configuration - Using ArcGIS REST export services via tile proxy

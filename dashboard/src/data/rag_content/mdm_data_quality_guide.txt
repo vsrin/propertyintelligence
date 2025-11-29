@@ -1,0 +1,319 @@
+# Master Data Management (MDM) for Property Insurance
+
+## Overview
+
+Master Data Management ensures consistent, accurate, and complete property data across all systems. In commercial property insurance, MDM addresses common challenges:
+
+- **Duplicate Locations**: Same building submitted multiple times with address variations
+- **Data Conflicts**: Conflicting values from different source systems
+- **Fragmented Customer View**: Can't see total exposure across all policies for one customer
+- **Data Gaps**: Missing critical underwriting data (geocodes, CAT scores, construction details)
+- **Stale Data**: Outdated inspections, valuations, or risk characteristics
+
+---
+
+## Duplicate Detection
+
+### Common Duplicate Patterns
+
+**Address Variations**
+- "123 Main St" vs "123 Main Street"
+- "Suite 100" vs "Ste 100" vs "#100"
+- "123 Main St, Building A" vs "123-A Main St"
+
+**Geocode Proximity**
+- Same building, different addresses (corner addresses)
+- Adjacent buildings submitted as one
+- Building complexes with multiple entries
+
+**TIV Clustering**
+- Similar TIV values (within 10-15%) suggest same building
+- Exact TIV match across submissions is strong duplicate indicator
+
+### Match Score Interpretation
+
+| Score | Confidence | Recommended Action |
+|-------|------------|-------------------|
+| 90-100% | Very High | Auto-merge candidate, verify before action |
+| 75-89% | High | Likely duplicate, review and merge |
+| 60-74% | Moderate | Possible duplicate, requires investigation |
+| 50-59% | Low | Possible match, compare details manually |
+| <50% | Minimal | Unlikely duplicate, dismiss |
+
+### Duplicate Resolution Best Practices
+
+1. **Create Golden Record**: Merge duplicates into single authoritative record
+2. **Preserve History**: Maintain audit trail of merged records
+3. **Select Best Values**: Use most reliable source for each field
+4. **Aggregate TIV**: Combine if truly same building, separate if distinct structures
+5. **Update Source Systems**: Push resolution back to originating systems
+
+---
+
+## Data Conflict Resolution
+
+### Source System Reliability Hierarchy
+
+When conflicting values exist, prioritize sources in this order:
+
+1. **Recent On-Site Inspection** (Most Reliable)
+   - Physical verification of property characteristics
+   - Professional engineer or loss control reports
+   - Dated within 3 years
+
+2. **ISO/Verisk Reports**
+   - Standardized property data
+   - Regular updates
+   - Construction and protection verified
+
+3. **Policy Administration System**
+   - Bound coverage reflects agreed values
+   - May lag actual conditions
+   - Update at renewal
+
+4. **Tax Records / Public Data**
+   - Official records but may be outdated
+   - Square footage often reliable
+   - Year built typically accurate
+
+5. **Broker Submission** (Least Reliable - Verify)
+   - Self-reported by insured
+   - May contain errors or optimistic values
+   - 85% of submissions contain data quality issues
+
+### Common Conflict Types
+
+**Sprinkler Status Conflicts**
+- Most critical conflict - affects rates 40-60%
+- Resolution: Request sprinkler certification or inspection
+- Red flag: "Fully Sprinklered" on submission, "None" on ISO
+
+**Construction Type Conflicts**
+- Affects fire severity and rates
+- Resolution: Review photos, request inspection
+- Common issue: Mixed construction reported as better class
+
+**Year Built Conflicts**
+- Affects maintenance assumptions, code compliance
+- Resolution: Tax records typically reliable
+- Consider major renovation dates
+
+**Square Footage Conflicts**
+- Affects TIV adequacy, rate per sqft
+- Resolution: Nearmap measurement, tax records
+- Variance >20% requires investigation
+
+### Conflict Resolution Workflow
+
+1. **Identify**: Flag locations with conflicting data
+2. **Prioritize**: Focus on high-TIV, high-severity conflicts
+3. **Investigate**: Gather additional data sources
+4. **Resolve**: Select authoritative value with documentation
+5. **Update**: Push resolution to all source systems
+6. **Monitor**: Track for recurring conflicts
+
+---
+
+## Data Enrichment Opportunities
+
+### Enrichment Types
+
+**Geocoding**
+- Convert address to lat/lon coordinates
+- Enables CAT modeling, distance calculations
+- Sources: Google Maps API, Nearmap, ESRI
+
+**CAT Scores**
+- Hurricane, earthquake, flood, wildfire exposure
+- Critical for pricing and capacity management
+- Sources: AIR, RMS, CoreLogic, internal models
+
+**Construction Details**
+- ISO construction class verification
+- Building materials, structural system
+- Sources: ISO reports, inspections, Nearmap imagery
+
+**Square Footage**
+- Accurate building footprint
+- Roof area for wind/hail exposure
+- Sources: Nearmap measurement, tax records
+
+**Protection Class**
+- Fire department response capability
+- Water supply adequacy
+- Sources: ISO PPC, fire department records
+
+**Inspection Data**
+- Current property condition
+- Risk control recommendations
+- Sources: Loss control surveys, engineering reports
+
+### Enrichment Prioritization
+
+| Priority | Enrichment Type | Impact | Cost |
+|----------|----------------|--------|------|
+| Critical | Geocoding | Enables all CAT modeling | Low |
+| Critical | CAT Scores | Pricing accuracy | Medium |
+| High | Construction | Rate adequacy | Medium |
+| High | Sprinkler Status | Major rate impact | Low-Medium |
+| Medium | Square Footage | TIV validation | Low |
+| Medium | Protection Class | Rate factor | Low |
+| Lower | Year Built | Minor rate impact | Low |
+
+### Enrichment ROI
+
+- **Geocoding**: Unlocks $50K+ in potential CAT exposure identification per 1,000 locations
+- **Construction Verification**: 15-25% rate adjustment opportunity on misclassified risks
+- **Sprinkler Confirmation**: 40-60% rate differential when protection confirmed
+
+---
+
+## Data Quality Scoring
+
+### Quality Dimensions
+
+**Completeness** (25% weight)
+- All required fields populated
+- Key fields: address, TIV, construction, protection, occupancy
+
+**Accuracy** (30% weight)
+- Values verified against reliable sources
+- No conflicting data
+- Recent inspection or validation
+
+**Timeliness** (20% weight)
+- Data currency (inspection within 3 years)
+- Recent valuation update
+- Current CAT scores
+
+**Consistency** (25% weight)
+- No duplicates
+- Standardized formats
+- Matches across systems
+
+### Quality Score Interpretation
+
+| Score | Grade | Action Required |
+|-------|-------|-----------------|
+| 90-100 | A | Maintain - annual review |
+| 80-89 | B | Good - address minor gaps |
+| 70-79 | C | Acceptable - prioritize improvements |
+| 60-69 | D | Substandard - enrichment needed |
+| <60 | F | Poor - major data initiative required |
+
+### Common Data Quality Issues
+
+**Missing Construction Code**
+- Impact: Can't properly rate or model
+- Resolution: ISO report, inspection, or imagery
+
+**Stale Inspection**
+- Impact: Conditions may have changed
+- Resolution: Schedule new inspection (priority for high TIV)
+
+**TIV Variance**
+- Impact: Potential coinsurance issue
+- Resolution: Request updated appraisal
+
+**Missing Geocode**
+- Impact: Can't run CAT models
+- Resolution: Geocoding service (automated)
+
+**Unverified Protection**
+- Impact: Rate may be incorrect
+- Resolution: Request sprinkler certification
+
+---
+
+## Customer 360 View
+
+### Account-Level Aggregation
+
+A complete customer view requires:
+
+1. **Total Exposure**: Sum of TIV across all locations
+2. **Location Count**: Number of insured properties
+3. **Geographic Spread**: States, CAT zones, concentrations
+4. **Claims History**: Account-level loss experience
+5. **Data Quality**: Average data quality score across locations
+6. **Outstanding Issues**: Aggregate duplicates, conflicts, enrichment needs
+
+### Account Health Indicators
+
+**Healthy Account**
+- Data quality score >80%
+- No unresolved duplicates
+- <5% of locations with conflicts
+- Current inspections on high-value locations
+- Complete CAT modeling data
+
+**At-Risk Account**
+- Data quality score 60-80%
+- Multiple potential duplicates
+- Sprinkler status conflicts
+- Stale inspections on key properties
+- Missing geocodes limiting CAT view
+
+**Problem Account**
+- Data quality score <60%
+- Significant duplicate exposure (TIV overcounted)
+- Critical conflicts unresolved
+- Can't accurately model CAT exposure
+- Incomplete underwriting picture
+
+### Account-Level Actions
+
+1. **Data Quality Initiative**: Systematic enrichment campaign
+2. **Duplicate Resolution**: Merge duplicates across submissions
+3. **Conflict Resolution**: Establish authoritative values
+4. **Inspection Program**: Schedule for high-value/high-risk
+5. **Renewal Preparation**: Clean data before renewal quoting
+
+---
+
+## MDM Best Practices
+
+### Ongoing Maintenance
+
+- **Daily**: Automated duplicate detection on new submissions
+- **Weekly**: Review and resolve flagged conflicts
+- **Monthly**: Data quality scorecard review
+- **Quarterly**: Enrichment prioritization and execution
+- **Annually**: Full portfolio data quality audit
+
+### Integration Points
+
+- **Submission Intake**: Validate and enrich at entry
+- **Policy Admin**: Sync golden record values
+- **CAT Modeling**: Ensure complete geocodes and exposures
+- **Underwriting Workbench**: Surface data quality issues
+- **Renewal Processing**: Clean data before quotes
+
+### Success Metrics
+
+| Metric | Target | Measurement |
+|--------|--------|-------------|
+| Duplicate Rate | <2% | Locations flagged / total locations |
+| Conflict Rate | <5% | Locations with conflicts / total |
+| Data Completeness | >95% | Required fields populated |
+| Geocode Coverage | 100% | Locations with valid lat/lon |
+| Inspection Currency | >80% | Inspected within 3 years |
+| Data Quality Score | >85% | Portfolio average |
+
+---
+
+## Regulatory and Compliance Considerations
+
+### Data Accuracy Requirements
+
+- **Rate Filings**: Accurate data required for filed rates
+- **Surplus Lines**: Complete property data for stamping
+- **Reinsurance**: Treaty compliance requires accurate aggregation
+- **Financial Reporting**: TIV must be accurate for reserves
+
+### Audit Trail Requirements
+
+- Document all data changes with timestamp and user
+- Maintain history of merged duplicates
+- Record conflict resolution decisions
+- Track enrichment sources and dates

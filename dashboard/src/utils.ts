@@ -260,6 +260,113 @@ export const parseQuery = (query: string, locations: Location[]): SearchResult =
     interpretations.push(`high rise`);
   }
 
+  // MDM - Duplicate detection
+  if (q.includes('duplicate') || q.includes('duplicates') || q.includes('potential match')) {
+    result = result.filter(l => l.potential_duplicates?.length > 0);
+    filters.push({ id: 'duplicates', label: 'Has Duplicates', type: 'mdm' });
+    interpretations.push(`with potential duplicates`);
+  }
+
+  // MDM - Data conflicts
+  if (q.includes('conflict') || q.includes('conflicts') || q.includes('discrepan') || q.includes('mismatch')) {
+    result = result.filter(l => l.data_conflicts?.length > 0);
+    filters.push({ id: 'conflicts', label: 'Has Conflicts', type: 'mdm' });
+    interpretations.push(`with data conflicts`);
+  }
+
+  // MDM - Sprinkler conflicts specifically
+  if (q.includes('sprinkler conflict') || q.includes('sprinkler mismatch')) {
+    result = result.filter(l => l.data_conflicts?.some((c: any) => c.field === 'sprinkler_status'));
+    filters.push({ id: 'sprinkler-conflicts', label: 'Sprinkler Conflicts', type: 'mdm' });
+    interpretations.push(`with sprinkler conflicts`);
+  }
+
+  // MDM - Enrichment opportunities
+  if (q.includes('enrich') || q.includes('enrichment') || q.includes('need') && q.includes('data')) {
+    result = result.filter(l => l.enrichment_opportunities?.length > 0);
+    filters.push({ id: 'enrichment', label: 'Needs Enrichment', type: 'mdm' });
+    interpretations.push(`needing enrichment`);
+  }
+
+  // MDM - Nearmap enrichment specifically
+  if (q.includes('nearmap')) {
+    if (q.includes('need') || q.includes('enrichment') || q.includes('missing')) {
+      result = result.filter(l => l.enrichment_opportunities?.some((e: any) => e.type === 'sqft' && e.available));
+      filters.push({ id: 'nearmap-enrich', label: 'Nearmap Available', type: 'mdm' });
+      interpretations.push(`with Nearmap enrichment available`);
+    } else {
+      result = result.filter(l => l.available_data?.nearmap_available);
+      filters.push({ id: 'nearmap', label: 'Has Nearmap', type: 'data' });
+      interpretations.push(`with Nearmap imagery`);
+    }
+  }
+
+  // MDM - ISO report conflicts
+  if (q.includes('iso') && (q.includes('conflict') || q.includes('report'))) {
+    result = result.filter(l => l.data_conflicts?.some((c: any) => c.conflicting_source?.includes('ISO')));
+    filters.push({ id: 'iso-conflicts', label: 'ISO Conflicts', type: 'mdm' });
+    interpretations.push(`with ISO report conflicts`);
+  }
+
+  // MDM - Multiple submissions
+  if (q.includes('multiple') && q.includes('submis') || q.includes('submitted') && (q.includes('multiple') || q.includes('times'))) {
+    result = result.filter(l => l.submission_history?.length > 1);
+    filters.push({ id: 'multi-submit', label: 'Multiple Submissions', type: 'mdm' });
+    interpretations.push(`submitted multiple times`);
+  }
+
+  // MDM - Stale inspections
+  if (q.includes('stale') || (q.includes('inspection') && (q.includes('old') || q.includes('overdue')))) {
+    result = result.filter(l => l.data_quality_issues?.includes('stale_inspection'));
+    filters.push({ id: 'stale-inspection', label: 'Stale Inspection', type: 'mdm' });
+    interpretations.push(`with stale inspections`);
+  }
+
+  // MDM - Missing construction
+  if (q.includes('missing') && q.includes('construction')) {
+    result = result.filter(l => l.data_quality_issues?.includes('missing_construction'));
+    filters.push({ id: 'missing-const', label: 'Missing Construction', type: 'mdm' });
+    interpretations.push(`missing construction data`);
+  }
+
+  // Account/Customer 360 filters
+  if (q.includes('customer 360') || q.includes('account') || q.includes('show all') && q.includes('for')) {
+    // Try to find account name in query
+    const accountNames = [...new Set(locations.map(l => l.account_name))];
+    for (const accName of accountNames) {
+      if (q.toLowerCase().includes(accName.toLowerCase().split(' ')[0].toLowerCase())) {
+        result = result.filter(l => l.account_name === accName);
+        filters.push({ id: `account-${accName}`, label: accName, type: 'account' });
+        interpretations.push(`${accName} (Customer 360)`);
+        break;
+      }
+    }
+  }
+
+  // Healthcare/Hospital
+  if (q.includes('healthcare') || q.includes('hospital') || q.includes('medical')) {
+    result = result.filter(l => 
+      l.occupancy_desc?.toLowerCase().includes('hospital') || 
+      l.occupancy_desc?.toLowerCase().includes('medical') ||
+      l.account_name?.toLowerCase().includes('medical') ||
+      l.account_name?.toLowerCase().includes('health')
+    );
+    filters.push({ id: 'healthcare', label: 'Healthcare', type: 'occupancy' });
+    interpretations.push(`healthcare`);
+  }
+
+  // University/College
+  if (q.includes('university') || q.includes('college') || q.includes('campus')) {
+    result = result.filter(l => 
+      l.occupancy_desc?.toLowerCase().includes('college') || 
+      l.occupancy_desc?.toLowerCase().includes('school') ||
+      l.account_name?.toLowerCase().includes('university') ||
+      l.account_name?.toLowerCase().includes('college')
+    );
+    filters.push({ id: 'university', label: 'University', type: 'occupancy' });
+    interpretations.push(`university/college`);
+  }
+
   // Address/location search (fallback)
   if (filters.length === 0) {
     const addressMatch = locations.filter(l => 
