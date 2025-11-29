@@ -12,7 +12,7 @@ export const AI_AGENT_ID = 'd7962a5a-2d8b-4b9f-94dc-90186347cf81';
 
 // Tile Proxy Configuration
 export const USE_LOCAL_PROXY = true;
-export const LOCAL_PROXY = 'http://localhost:3001/tile?';
+export const LOCAL_PROXY = 'https://small-darkness-6289.vs-ca9.workers.dev/tile?';
 export const PUBLIC_PROXY = 'https://corsproxy.io/?';
 
 // Example queries for placeholder rotation
@@ -40,7 +40,7 @@ export const PERIL_OVERLAYS: Record<string, PerilOverlay> = {
     color: '#f97316',
     description: 'USFS Wildfire Hazard Potential',
     tiles: [
-      `http://localhost:3001/tile?base=${encodeURIComponent('https://apps.fs.usda.gov/arcx/rest/services/RDW_Wildfire/ProbabilisticWildfireRisk/MapServer/export')}&bbox={bbox-epsg-3857}`
+      `https://small-darkness-6289.vs-ca9.workers.dev/tile?base=${encodeURIComponent('https://apps.fs.usda.gov/arcx/rest/services/RDW_Wildfire/ProbabilisticWildfireRisk/MapServer/export')}&bbox={bbox-epsg-3857}`
     ],
     legendItems: [
       { color: '#fee08b', label: 'Low' },
@@ -55,7 +55,7 @@ export const PERIL_OVERLAYS: Record<string, PerilOverlay> = {
     color: '#8b5cf6',
     description: 'NOAA Coastal Flood Hazard',
     tiles: [
-      `http://localhost:3001/tile?base=${encodeURIComponent('https://coast.noaa.gov/arcgis/rest/services/FloodExposureMapper/CFEM_CoastalFloodHazardComposite/MapServer/export')}&bbox={bbox-epsg-3857}`
+      `https://small-darkness-6289.vs-ca9.workers.dev/tile?base=${encodeURIComponent('https://coast.noaa.gov/arcgis/rest/services/FloodExposureMapper/CFEM_CoastalFloodHazardComposite/MapServer/export')}&bbox={bbox-epsg-3857}`
     ],
     legendItems: [
       { color: '#c4b5fd', label: 'Cat 1-2' },
@@ -70,7 +70,7 @@ export const PERIL_OVERLAYS: Record<string, PerilOverlay> = {
     color: '#3b82f6',
     description: 'FEMA Flood Hazard',
     tiles: [
-      `http://localhost:3001/tile?base=${encodeURIComponent('https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/export')}&bbox={bbox-epsg-3857}&layers=show:28`
+      `https://small-darkness-6289.vs-ca9.workers.dev/tile?base=${encodeURIComponent('https://hazards.fema.gov/gis/nfhl/rest/services/public/NFHL/MapServer/export')}&bbox={bbox-epsg-3857}&layers=show:28`
     ],
     legendItems: [
       { color: '#93c5fd', label: 'Zone X' },
@@ -85,7 +85,7 @@ export const PERIL_OVERLAYS: Record<string, PerilOverlay> = {
     color: '#eab308',
     description: 'USGS Seismic Hazard',
     tiles: [
-      `http://localhost:3001/tile?base=${encodeURIComponent('https://earthquake.usgs.gov/arcgis/rest/services/haz/hazmap2018/MapServer/export')}&bbox={bbox-epsg-3857}`
+      `https://small-darkness-6289.vs-ca9.workers.dev/tile?base=${encodeURIComponent('https://earthquake.usgs.gov/arcgis/rest/services/haz/hazmap2018/MapServer/export')}&bbox={bbox-epsg-3857}`
     ],
     legendItems: [
       { color: '#fef08a', label: 'Moderate' },
