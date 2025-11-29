@@ -3,7 +3,7 @@
 import type { PerilOverlay } from './types';
 
 // API Keys (from environment)
-export const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
+export const MAPBOX_TOKEN = 'pk.eyJ1IjoiZWxldmF0ZW5vdyIsImEiOiJjbWlqZDczejExNGJyM2NxODNtcjk4NXZzIn0.-boLEfnCFHAxHsD7XoazkA';
 export const GOOGLE_MAPS_KEY = import.meta.env.VITE_GOOGLE_MAPS_KEY;
 
 // AI Agent Configuration
